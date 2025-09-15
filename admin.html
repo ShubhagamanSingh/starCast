@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard - Bollywood star cast</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Raleway', Arial, sans-serif;
+            background: #f8f8f8;
+            color: #222;
+        }
+        header, footer {
+            background: #000;
+            color: #fff;
+            padding: 20px 0;
+        }
+        .sidebar {
+            background: #000;
+            color: #fff;
+            height: calc(100vh - 150px);
+            position: sticky;
+            top: 70px;
+        }
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: #C90918;
+            color: #000;
+        }
+        .main-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .btn-custom {
+            background: #C90918;
+            color: #fff;
+            border: none;
+        }
+        .btn-custom:hover {
+            background: #c08f45;
+            color: #fff;
+        }
+        .table th {
+            background-color: #000;
+            color: #fff;
+        }
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: #fff9f0;
+        }
+        .search-box {
+            background: #e9ecef;
+            border-radius: 30px;
+            padding: 10px 15px;
+        }
+        .stats-card {
+            background: #000;
+            color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .stats-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #C90918;
+        }
+        .stats-card .label {
+            font-size: 1rem;
+        }
+        .filter-section {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .action-buttons .btn {
+            margin-right: 10px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <header class="bg-dark text-white">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <img src="assets/images/logo.jpg" alt="Event" class="responsive-img img-fluid" style="max-width:100px; border-radius:5px;">
+                <h2>Bollywood star cast Admin Dashboard</h2>
+                <!-- <div>
+                    <span class="me-3">Welcome, Admin</span>
+                    <button class="btn btn-custom">Logout</button>
+                </div> -->
+                <div>
+                    <a class="btn btn-custom" href="/register.html">Register</a>
+                    <a class="btn btn-custom" href="/login.html">LogIn</a>
+                    <!-- <a class="btn btn-custom" href="/admin.html">Admin</a> -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 col-md-3 sidebar">
+                <a href="#" class="active"><i class="fas fa-home me-2"></i>Dashboard</a>
+                <a href="#"><i class="fas fa-users me-2"></i>Participants</a>
+                <a href="#"><i class="fas fa-calendar me-2"></i>Auditions</a>
+                <a href="#"><i class="fas fa-chart-bar me-2"></i>Reports</a>
+                <a href="#"><i class="fas fa-cog me-2"></i>Settings</a>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 col-md-9">
+                <div class="main-content">
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="number" id="totalSubmissions">0</div>
+                                <div class="label">Total Submissions</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="number" id="girlParticipants">0</div>
+                                <div class="label">Girl Participants</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="number" id="boyParticipants">0</div>
+                                <div class="label">Boy Participants</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="number" id="todaySubmissions">0</div>
+                                <div class="label">Today's Submissions</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filter-section">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="cityFilter" class="form-label">Filter by City</label>
+                                <select id="cityFilter" class="form-select">
+                                    <option value="">All Cities</option>
+                                    <option value="mumbai">Mumbai</option>
+                                    <option value="ahmedabad">Ahmedabad</option>
+                                    <option value="hyderabad">Hyderabad</option>
+                                    <option value="delhi">Delhi</option>
+                                    <option value="kolkata">Kolkata</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="genderFilter" class="form-label">Filter by Gender</label>
+                                <select id="genderFilter" class="form-select">
+                                    <option value="">All Genders</option>
+                                    <option value="girl">Girl</option>
+                                    <option value="boy">Boy</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="searchInput" class="form-label">Search</label>
+                                <div class="search-box">
+                                    <i class="fas fa-search me-2"></i>
+                                    <input type="text" id="searchInput" placeholder="Search by name, email, or phone..." class="border-0 bg-transparent" style="outline: none;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="action-buttons">
+                                    <button class="btn btn-custom" id="exportBtn">
+                                        <i class="fas fa-file-export me-2"></i>Export Data
+                                    </button>
+                                    <button class="btn btn-secondary" id="refreshBtn">
+                                        <i class="fas fa-sync me-2"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submissions Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="submissionsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Child Name</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>City</th>
+                                    <th>Contact</th>
+                                    <th>Parent Name</th>
+                                    <th>Submission Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="submissionsBody">
+                                <!-- Data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Submissions pagination">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submission Detail Modal -->
+    <div class="modal fade" id="submissionModal" tabindex="-1" aria-labelledby="submissionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="submissionModalLabel">Submission Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="submissionDetails">
+                        <!-- Details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-custom">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white mt-4 py-3">
+        <div class="container-fluid">
+            <p class="mb-0 text-center">Copyright &copy; 2025 Bollywood star cast</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Sample data - in a real application this would come from a server
+        let submissions = [];
+        
+        // Load submissions data
+        function loadSubmissions() {
+            fetch('submissions.json')
+                .then(response => response.json())
+                .then(data => {
+                    submissions = data;
+                    displaySubmissions(data);
+                    updateStats(data);
+                })
+                .catch(error => {
+                    console.error('Error loading submissions:', error);
+                    // In case of error, use sample data
+                    submissions = [
+                        {
+                            "id": 1,
+                            "child_name": "Priya Sharma",
+                            "date_of_birth": "2010-05-15",
+                            "age": "15 years 4 months",
+                            "gender": "girl",
+                            "reference": "Rajesh Mehta",
+                            "audition_city": "mumbai",
+                            "contact_number": "9876543210",
+                            "parent_name": "Anil Sharma",
+                            "email_id": "anil.sharma@example.com",
+                            "facebook_id": "priya.sharma.fb",
+                            "instagram_id": "priya_sharma_insta",
+                            "address": "123, Marine Drive, Mumbai",
+                            "state": "Maharashtra",
+                            "city": "Mumbai",
+                            "submission_date": "2025-09-10T14:30:00Z"
+                        },
+                        {
+                            "id": 2,
+                            "child_name": "Amit Patel",
+                            "date_of_birth": "2012-08-22",
+                            "age": "13 years 1 month",
+                            "gender": "boy",
+                            "reference": "",
+                            "audition_city": "ahmedabad",
+                            "contact_number": "9876543211",
+                            "parent_name": "Sunita Patel",
+                            "email_id": "sunita.patel@example.com",
+                            "facebook_id": "",
+                            "instagram_id": "amit_patel_kid",
+                            "address": "456, SG Highway, Ahmedabad",
+                            "state": "Gujarat",
+                            "city": "Ahmedabad",
+                            "submission_date": "2025-09-11T10:15:00Z"
+                        },
+                        {
+                            "id": 3,
+                            "child_name": "Sneha Reddy",
+                            "date_of_birth": "2009-12-03",
+                            "age": "15 years 9 months",
+                            "gender": "girl",
+                            "reference": "Kavita Reddy",
+                            "audition_city": "hyderabad",
+                            "contact_number": "9876543212",
+                            "parent_name": "Rajesh Reddy",
+                            "email_id": "rajesh.reddy@example.com",
+                            "facebook_id": "",
+                            "instagram_id": "sneha_reddy_art",
+                            "address": "789, Banjara Hills, Hyderabad",
+                            "state": "Telangana",
+                            "city": "Hyderabad",
+                            "submission_date": "2025-09-12T16:45:00Z"
+                        },
+                        {
+                            "id": 4,
+                            "child_name": "Rohan Singh",
+                            "date_of_birth": "2013-03-17",
+                            "age": "12 years 6 months",
+                            "gender": "boy",
+                            "reference": "Deepak Gupta",
+                            "audition_city": "delhi",
+                            "contact_number": "9876543213",
+                            "parent_name": "Neha Singh",
+                            "email_id": "neha.singh@example.com",
+                            "facebook_id": "rohan.singh.kid",
+                            "instagram_id": "",
+                            "address": "101, Connaught Place, Delhi",
+                            "state": "Delhi",
+                            "city": "Delhi",
+                            "submission_date": "2025-09-13T09:20:00Z"
+                        },
+                        {
+                            "id": 5,
+                            "child_name": "Ananya Gupta",
+                            "date_of_birth": "2011-07-28",
+                            "age": "14 years 2 months",
+                            "gender": "girl",
+                            "reference": "Deepak Gupta",
+                            "audition_city": "kolkata",
+                            "contact_number": "9876543214",
+                            "parent_name": "Pooja Gupta",
+                            "email_id": "pooja.gupta@example.com",
+                            "facebook_id": "ananya.gupta.dance",
+                            "instagram_id": "ananya_gupta_dance",
+                            "address": "202, Park Street, Kolkata",
+                            "state": "West Bengal",
+                            "city": "Kolkata",
+                            "submission_date": "2025-09-14T11:30:00Z"
+                        }
+                    ];
+                    displaySubmissions(submissions);
+                    updateStats(submissions);
+                });
+        }
+        
+        // Display submissions in the table
+        function displaySubmissions(data) {
+            const tbody = document.getElementById('submissionsBody');
+            tbody.innerHTML = '';
+            
+            data.forEach(submission => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${submission.id}</td>
+                    <td>${submission.child_name}</td>
+                    <td>${submission.age}</td>
+                    <td>${submission.gender}</td>
+                    <td>${submission.city}</td>
+                    <td>${submission.contact_number}</td>
+                    <td>${submission.parent_name}</td>
+                    <td>${formatDate(submission.submission_date)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-custom view-details" data-id="${submission.id}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Add event listeners to view buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    showSubmissionDetails(id);
+                });
+            });
+        }
+        
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        
+        // Show submission details in modal
+        function showSubmissionDetails(id) {
+            const submission = submissions.find(s => s.id === id);
+            if (!submission) return;
+            
+            const detailsContainer = document.getElementById('submissionDetails');
+            detailsContainer.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Child Information</h5>
+                        <table class="table">
+                            <tr><td><strong>Name:</strong></td><td>${submission.child_name}</td></tr>
+                            <tr><td><strong>Date of Birth:</strong></td><td>${formatDate(submission.date_of_birth)}</td></tr>
+                            <tr><td><strong>Age:</strong></td><td>${submission.age}</td></tr>
+                            <tr><td><strong>Gender:</strong></td><td>${submission.gender}</td></tr>
+                            <tr><td><strong>Reference:</strong></td><td>${submission.reference || 'None'}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Audition Information</h5>
+                        <table class="table">
+                            <tr><td><strong>City:</strong></td><td>${submission.audition_city}</td></tr>
+                            <tr><td><strong>Contact:</strong></td><td>${submission.contact_number}</td></tr>
+                            <tr><td><strong>Facebook:</strong></td><td>${submission.facebook_id || 'None'}</td></tr>
+                            <tr><td><strong>Instagram:</strong></td><td>${submission.instagram_id || 'None'}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5>Parent Information</h5>
+                        <table class="table">
+                            <tr><td><strong>Name:</strong></td><td>${submission.parent_name}</td></tr>
+                            <tr><td><strong>Email:</strong></td><td>${submission.email_id}</td></tr>
+                            <tr><td><strong>Address:</strong></td><td>${submission.address}</td></tr>
+                            <tr><td><strong>State:</strong></td><td>${submission.state}</td></tr>
+                            <tr><td><strong>City:</strong></td><td>${submission.city}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p><strong>Submission Date:</strong> ${formatDate(submission.submission_date)}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('submissionModal'));
+            modal.show();
+        }
+        
+        // Update statistics cards
+        function updateStats(data) {
+            document.getElementById('totalSubmissions').textContent = data.length;
+            
+            const girls = data.filter(s => s.gender === 'girl').length;
+            const boys = data.filter(s => s.gender === 'boy').length;
+            
+            document.getElementById('girlParticipants').textContent = girls;
+            document.getElementById('boyParticipants').textContent = boys;
+            
+            // Count today's submissions
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const todayCount = data.filter(s => {
+                const submissionDate = new Date(s.submission_date);
+                submissionDate.setHours(0, 0, 0, 0);
+                return submissionDate.getTime() === today.getTime();
+            }).length;
+            
+            document.getElementById('todaySubmissions').textContent = todayCount;
+        }
+        
+        // Filter submissions
+        function filterSubmissions() {
+            const cityFilter = document.getElementById('cityFilter').value;
+            const genderFilter = document.getElementById('genderFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = submissions;
+            
+            if (cityFilter) {
+                filtered = filtered.filter(s => s.city.toLowerCase() === cityFilter.toLowerCase());
+            }
+            
+            if (genderFilter) {
+                filtered = filtered.filter(s => s.gender === genderFilter);
+            }
+            
+            if (searchTerm) {
+                filtered = filtered.filter(s => 
+                    s.child_name.toLowerCase().includes(searchTerm) ||
+                    s.parent_name.toLowerCase().includes(searchTerm) ||
+                    s.email_id.toLowerCase().includes(searchTerm) ||
+                    s.contact_number.includes(searchTerm)
+                );
+            }
+            
+            displaySubmissions(filtered);
+        }
+        
+        // Export data as CSV
+        function exportToCSV() {
+            if (submissions.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            // Define CSV headers
+            const headers = [
+                'ID', 'Child Name', 'Date of Birth', 'Age', 'Gender', 
+                'Reference Name', 'Audition City', 'Contact Number',
+                'Parent Name', 'Parent Email', 'Facebook', 'Instagram',
+                'Address', 'State', 'City', 'Submission Date'
+            ];
+            
+            // Create CSV content
+            let csvContent = headers.join(',') + '\n';
+            
+            submissions.forEach(submission => {
+                const row = [
+                    submission.id,
+                    submission.child_name,
+                    submission.date_of_birth,
+                    submission.age,
+                    submission.gender,
+                    submission.reference || '',
+                    submission.audition_city,
+                    submission.contact_number,
+                    submission.parent_name,
+                    submission.email_id,
+                    submission.facebook_id || '',
+                    submission.instagram_id || '',
+                    `"${submission.address}"`,
+                    submission.state,
+                    submission.city,
+                    submission.submission_date
+                ];
+                csvContent += row.join(',') + '\n';
+            });
+            
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'juniormissindia_submissions.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSubmissions();
+            
+            // Add event listeners for filters
+            document.getElementById('cityFilter').addEventListener('change', filterSubmissions);
+            document.getElementById('genderFilter').addEventListener('change', filterSubmissions);
+            document.getElementById('searchInput').addEventListener('input', filterSubmissions);
+            
+            // Add event listener for export button
+            document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+            
+            // Add event listener for refresh button
+            document.getElementById('refreshBtn').addEventListener('click', loadSubmissions);
+        });
+    </script>
+</body>
+</html>
